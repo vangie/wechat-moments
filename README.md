@@ -31,19 +31,54 @@ uv tool install wechat-moments
 ### Homebrew (macOS)
 
 ```bash
-brew tap vangie/tap
+brew tap vangie/formula
 brew install wechat-moments
 ```
 
-### Development
+## Usage
 
-```bash
-git clone https://github.com/vangie/wechat-moments
-cd wechat-moments
-uv sync
+### OpenClaw Integration
+
+To integrate with [OpenClaw](https://github.com/anthropics/openclaw) or other MCP clients:
+
+#### Local Setup (stdio mode)
+
+If the MCP client and Android phone are on the same machine, use stdio transport (recommended):
+
+Add to your MCP client config (e.g., `~/.mcporter/mcporter.json`):
+
+```json
+{
+  "mcpServers": {
+    "wechat-moments": {
+      "command": "wx-pyq-mcp"
+    }
+  }
+}
 ```
 
-## Usage
+#### Remote Setup (SSE mode)
+
+If the Android phone is connected to a different machine:
+
+1. On the machine with the phone, start the MCP server:
+
+```bash
+wx-pyq-mcp --transport sse --host 0.0.0.0 --port 8765
+```
+
+2. On the remote machine, configure the MCP client:
+
+```json
+{
+  "mcpServers": {
+    "wechat-moments": {
+      "baseUrl": "http://<phone-machine-ip>:8765/sse",
+      "transport": "sse"
+    }
+  }
+}
+```
 
 ### CLI
 
@@ -67,13 +102,19 @@ wx-pyq collect-fixtures -o tests/fsm/fixtures/
 wx-pyq cleanup
 ```
 
-### MCP Server (for OpenClaw)
+### MCP Server
+
+The MCP server exposes tools for AI agents to post to WeChat Moments.
 
 ```bash
+# Start MCP server (stdio transport, for local use)
 wx-pyq-mcp
+
+# Start MCP server with SSE transport (for remote access)
+wx-pyq-mcp --transport sse --host 0.0.0.0 --port 8765
 ```
 
-Exposes 4 tools:
+#### Available Tools
 
 | Tool | Description |
 |------|-------------|
@@ -82,10 +123,10 @@ Exposes 4 tools:
 | `get_device_status()` | Check ADB connection and app installation |
 | `take_screenshot()` | Capture current phone screen for debugging |
 
-**Typical OpenClaw workflow:**
+#### Typical Workflow
 
 ```
-prepare_post("text", ["image.jpg"]) 
+prepare_post("text", ["image.jpg"])
   → returns { post_id, preview_path, ... }
   → show preview_path to user for confirmation (optional)
 submit_post(post_id)
@@ -129,15 +170,6 @@ UI coordinates are stored in `profiles/<device_serial>.json`. Huawei defaults ar
 └── archive/<post_id>/   # completed posts (preview + meta kept 30 days)
 ```
 
-## Testing
+## License
 
-```bash
-# Unit + FSM identify tests (no phone needed)
-uv run pytest tests/unit/ tests/fsm/ -v
-
-# End-to-end (phone required)
-uv run pytest -m e2e
-
-# Collect FSM fixtures from real device (run once)
-wx-pyq collect-fixtures -o tests/fsm/fixtures/
-```
+MIT
