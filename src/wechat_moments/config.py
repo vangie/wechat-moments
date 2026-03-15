@@ -60,7 +60,14 @@ ARCHIVE_DIR = DATA_DIR / "archive"
 HISTORY_FILE = DATA_DIR / "history.jsonl"
 LOCK_FILE = DATA_DIR / "submit.lock"
 
-PROFILES_DIR = Path(__file__).parent.parent.parent / "profiles"
+# Profiles bundled inside the package (importlib.resources)
+import importlib.resources as _pkg_resources
+
+def _bundled_profiles_dir() -> Path:
+    """Return the path to bundled profiles shipped inside the wheel."""
+    return Path(str(_pkg_resources.files("wechat_moments.profiles")))
+
+PROFILES_DIR = _bundled_profiles_dir()
 
 WECHAT_PACKAGE = "com.tencent.mm"
 PHONE_IMAGE_DIR = "/sdcard/DCIM/WeChatMCP"
