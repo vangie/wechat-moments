@@ -42,6 +42,26 @@ Run tests before submitting:
 uv run pytest tests/unit tests/fsm -q
 ```
 
+### Collecting FSM Test Fixtures
+
+FSM tests use real screenshots captured from a device. To update or add new fixtures:
+
+1. Connect an Android phone with WeChat installed
+2. Run the fixture collector:
+
+```bash
+wx-pyq collect-fixtures -o tests/fsm/fixtures/
+```
+
+This will:
+- Walk through the WeChat Moments posting flow
+- Capture screenshots at each FSM state
+- Save annotated images showing tap/swipe locations
+
+Options:
+- `--phase 2` - Run specific phase only (1, 2, or 3)
+- `--steps 3-5` - Run specific step range within a phase
+
 ## Pull Request Process
 
 1. Fork the repository and create a feature branch from `main`
