@@ -12,8 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Initial release
-- CLI tool `wx-pyq-adb` for posting to WeChat Moments
-- MCP server `wx-pyq-adb-mcp` for AI agent integration
+- CLI tool `wx-pyq` for posting to WeChat Moments
+- MCP server `wx-pyq-mcp` for AI agent integration
 - FSM-based UI automation (no LLM required for UI interaction)
 - Support for text-only and image posts (up to 9 images)
 - Preview generation before posting
@@ -22,11 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Features
 
-- `wx-pyq-adb status` - Check device connection
-- `wx-pyq-adb post` - Post to Moments with text and/or images
-- `wx-pyq-adb cleanup` - Clean up expired staging/archive directories
-- `wx-pyq-adb calibrate` - Create device profile for new devices
-- `wx-pyq-adb collect-fixtures` - Collect FSM test fixtures
+- `wx-pyq status` - Check device connection
+- `wx-pyq post` - Post to Moments with text and/or images
+- `wx-pyq cleanup` - Clean up expired staging/archive directories
+- `wx-pyq calibrate` - Create device profile for new devices
+- `wx-pyq collect-fixtures` - Collect FSM test fixtures
 
 [Unreleased]: https://github.com/vangie/wechat-moments/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/vangie/wechat-moments/releases/tag/v0.1.0

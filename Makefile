@@ -35,13 +35,13 @@ deploy-remote: ## Deploy MCP config to remote mcporter [REMOTE=...] [ENDPOINT=..
 	./scripts/deploy-mcp-remote.sh "$(REMOTE)" "$(ENDPOINT)"
 
 status: ## Check ADB connection and WeChat status
-	uv run wx-pyq-adb status
+	uv run wx-pyq status
 
 adb-screenshot: ## Take a screenshot and save to screenshots/
 	./scripts/adb-screenshot.sh
 
 cleanup: ## Remove expired staging and archive directories
-	uv run wx-pyq-adb cleanup
+	uv run wx-pyq cleanup
 
 post: ## Post to WeChat Moments [TEXT=...] [IMAGE=...]
-	uv run wx-pyq-adb post $(if $(TEXT),"$(TEXT)",) $(if $(IMAGE),-i "$(IMAGE)",) --debug
+	uv run wx-pyq post $(if $(TEXT),"$(TEXT)",) $(if $(IMAGE),-i "$(IMAGE)",) --debug

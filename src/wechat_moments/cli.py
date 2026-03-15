@@ -10,7 +10,7 @@ from .submit import execute_submit
 
 
 @click.group()
-@click.version_option(__version__, prog_name="wx-pyq-adb")
+@click.version_option(__version__, prog_name="wx-pyq")
 def main() -> None:
     """WeChat Moments poster via ADB automation."""
 
@@ -107,9 +107,9 @@ def collect_fixtures(output_dir: str, phase: int | None, steps: str | None) -> N
     Each step captures raw and annotated screenshots with tap/swipe indicators.
 
     Examples:
-        wx-pyq-adb collect-fixtures                    # Run all phases
-        wx-pyq-adb collect-fixtures --phase 2         # Run phase 2 only
-        wx-pyq-adb collect-fixtures --phase 2 --steps 3-5  # Phase 2, steps 3-5
+        wx-pyq collect-fixtures                    # Run all phases
+        wx-pyq collect-fixtures --phase 2         # Run phase 2 only
+        wx-pyq collect-fixtures --phase 2 --steps 3-5  # Phase 2, steps 3-5
     """
     import time
     from pathlib import Path

@@ -20,4 +20,4 @@ if [ -n "$LOCAL_IP" ]; then
     echo "Remote clients connect to: http://${LOCAL_IP}:${PORT}/sse"
 fi
 
-exec uv run wx-pyq-adb-mcp --transport sse --host "$HOST" --port "$PORT"
+exec uv run wx-pyq-mcp --transport sse --host "$HOST" --port "$PORT"

@@ -49,28 +49,28 @@ uv sync
 
 ```bash
 # Check device connection
-wx-pyq-adb status
+wx-pyq status
 
 # Post with text only
-wx-pyq-adb post "今天天气真好"
+wx-pyq post "今天天气真好"
 
 # Post with images (local paths or URLs, max 9)
-wx-pyq-adb post "周末出游" -i photo1.jpg -i photo2.jpg
+wx-pyq post "周末出游" -i photo1.jpg -i photo2.jpg
 
 # Post without preview confirmation prompt
-wx-pyq-adb post "自动发布" -i photo.jpg --no-preview
+wx-pyq post "自动发布" -i photo.jpg --no-preview
 
 # Collect FSM test fixtures (run once with phone connected)
-wx-pyq-adb collect-fixtures -o tests/fsm/fixtures/
+wx-pyq collect-fixtures -o tests/fsm/fixtures/
 
 # Clean up expired staging / archive dirs
-wx-pyq-adb cleanup
+wx-pyq cleanup
 ```
 
 ### MCP Server (for OpenClaw)
 
 ```bash
-wx-pyq-adb-mcp
+wx-pyq-mcp
 ```
 
 Exposes 4 tools:
@@ -117,7 +117,7 @@ CLI / MCP Server
 
 ## Device Profiles
 
-UI coordinates are stored in `profiles/<device_serial>.json`. Huawei defaults are in `profiles/huawei_default.json`. Run `wx-pyq-adb calibrate` to create a profile for a new device.
+UI coordinates are stored in `profiles/<device_serial>.json`. Huawei defaults are in `profiles/huawei_default.json`. Run `wx-pyq calibrate` to create a profile for a new device.
 
 ## Data Directory
 
@@ -139,5 +139,5 @@ uv run pytest tests/unit/ tests/fsm/ -v
 uv run pytest -m e2e
 
 # Collect FSM fixtures from real device (run once)
-wx-pyq-adb collect-fixtures -o tests/fsm/fixtures/
+wx-pyq collect-fixtures -o tests/fsm/fixtures/
 ```
