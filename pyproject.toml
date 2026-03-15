@@ -1,0 +1,63 @@
+[project]
+name = "wechat-moments"
+version = "0.1.0"
+description = "Post to WeChat Moments via ADB automation"
+readme = "README.md"
+authors = [{ name = "Vangie Du", email = "duwan@live.com" }]
+license = "MIT"
+requires-python = ">=3.12"
+keywords = ["wechat", "moments", "adb", "automation", "android"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Testing",
+]
+dependencies = [
+    "uiautomator2>=3.0",
+    "opencv-python>=4.9",
+    "Pillow>=11.0",
+    "pytesseract>=0.3.10",
+    "mcp[cli]>=1.5",
+    "click>=8.1",
+    "pydantic>=2.0",
+    "httpx>=0.27",
+]
+
+[project.urls]
+Homepage = "https://github.com/vangie/wechat-moments"
+Repository = "https://github.com/vangie/wechat-moments"
+Issues = "https://github.com/vangie/wechat-moments/issues"
+
+[project.scripts]
+wx-pyq-adb = "wechat_moments.cli:main"
+wx-pyq-adb-mcp = "wechat_moments.server:main"
+
+[build-system]
+requires = ["uv_build>=0.10.4,<0.11.0"]
+build-backend = "uv_build"
+
+[tool.uv]
+
+[dependency-groups]
+dev = ["pytest>=8.0", "pytest-mock>=3.14", "mcp-hmr>=0.0.3", "pytest-asyncio>=0.24", "ruff>=0.9"]
+
+[tool.pytest.ini_options]
+markers = ["e2e: end-to-end tests requiring a connected Android device"]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501", "E402"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["wechat_moments"]

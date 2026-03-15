@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Testing
+.pytest_cache/
+
+# macOS
+.DS_Store
+
+# Development screenshots (debug only)
+screenshots/
+
+# Local env overrides (optional)
+.env
+.env.local
+.debug/
+.cursor/
