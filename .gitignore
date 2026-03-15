@@ -18,8 +18,7 @@ wheels/
 # Development screenshots (debug only)
 screenshots/
 
-# Local env overrides (optional)
-.env
+# Local env overrides (not committed)
 .env.local
 .debug/
 .cursor/
