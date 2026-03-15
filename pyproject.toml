@@ -34,8 +34,8 @@ Repository = "https://github.com/vangie/wechat-moments"
 Issues = "https://github.com/vangie/wechat-moments/issues"
 
 [project.scripts]
-wx-pyq-adb = "wechat_moments.cli:main"
-wx-pyq-adb-mcp = "wechat_moments.server:main"
+wx-pyq = "wechat_moments.cli:main"
+wx-pyq-mcp = "wechat_moments.server:main"
 
 [build-system]
 requires = ["uv_build>=0.10.4,<0.11.0"]
