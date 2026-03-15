@@ -526,7 +526,7 @@ def has_camera_icon_top_right(screenshot_bytes: bytes) -> bool:
     if total < 800:
         return False
     # Some fixtures have more edges on the left; require at least a share on the right
-    return right_edges >= 0.2 * total
+    return right_edges >= 0.1 * total
 
 
 def is_album_filter_screen(screenshot_bytes: bytes) -> bool:
