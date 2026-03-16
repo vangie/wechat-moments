@@ -93,3 +93,35 @@ jobs:
             brew install wechat-moments
             ```
           generate_release_notes: false
+
+  trigger-homebrew-update:
+    runs-on: ubuntu-latest
+    needs: release
+    steps:
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Wait for PyPI to be available
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          echo "Waiting for wechat-moments==${VERSION} on PyPI..."
+          for i in {1..30}; do
+            if curl -s "https://pypi.org/pypi/wechat-moments/${VERSION}/json" | grep -q '"version"'; then
+              echo "Package available on PyPI"
+              exit 0
+            fi
+            echo "Attempt $i: Package not yet available, waiting 10s..."
+            sleep 10
+          done
+          echo "Timeout waiting for PyPI"
+          exit 1
+
+      - name: Trigger homebrew-formula update
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.HOMEBREW_FORMULA_TOKEN }}" \
+            https://api.github.com/repos/vangie/homebrew-formula/actions/workflows/auto-update-wechat-moments.yml/dispatches \
+            -d '{"ref":"master","inputs":{"version":"${{ steps.version.outputs.VERSION }}"}}'
+          echo "Triggered homebrew-formula update workflow"
