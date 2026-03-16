@@ -1,0 +1,74 @@
+name: Update Homebrew Formula
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  update-homebrew:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract version from release tag
+        id: version
+        run: |
+          VERSION="${{ github.event.release.tag_name }}"
+          VERSION="${VERSION#v}"
+          echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Wait for PyPI to be available
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          echo "Waiting for wechat-moments==${VERSION} on PyPI..."
+          for i in {1..30}; do
+            if curl -s "https://pypi.org/pypi/wechat-moments/${VERSION}/json" | grep -q '"version"'; then
+              echo "Package available on PyPI"
+              exit 0
+            fi
+            echo "Attempt $i: Package not yet available, waiting 10s..."
+            sleep 10
+          done
+          echo "Timeout waiting for PyPI"
+          exit 1
+
+      - name: Get PyPI package info
+        id: pypi
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          PYPI_JSON=$(curl -s "https://pypi.org/pypi/wechat-moments/${VERSION}/json")
+          URL=$(echo "$PYPI_JSON" | jq -r '.urls[] | select(.packagetype == "sdist") | .url')
+          SHA256=$(echo "$PYPI_JSON" | jq -r '.urls[] | select(.packagetype == "sdist") | .digests.sha256')
+          echo "URL=${URL}" >> $GITHUB_OUTPUT
+          echo "SHA256=${SHA256}" >> $GITHUB_OUTPUT
+
+      - name: Checkout homebrew-formula
+        uses: actions/checkout@v6
+        with:
+          repository: vangie/homebrew-formula
+          token: ${{ secrets.HOMEBREW_FORMULA_TOKEN }}
+          path: homebrew-formula
+
+      - name: Update formula
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          URL=${{ steps.pypi.outputs.URL }}
+          SHA256=${{ steps.pypi.outputs.SHA256 }}
+          
+          cd homebrew-formula
+          sed -i "s/version \".*\"/version \"${VERSION}\"/" wechat-moments.rb
+          sed -i "s|url \".*\"|url \"${URL}\"|" wechat-moments.rb
+          sed -i "s/sha256 \".*\"/sha256 \"${SHA256}\"/" wechat-moments.rb
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          path: homebrew-formula
+          token: ${{ secrets.HOMEBREW_FORMULA_TOKEN }}
+          commit-message: "Update wechat-moments to ${{ steps.version.outputs.VERSION }}"
+          title: "Update wechat-moments to ${{ steps.version.outputs.VERSION }}"
+          body: |
+            Automated update triggered by [wechat-moments ${{ steps.version.outputs.VERSION }}](${{ github.event.release.html_url }})
+            
+            - Version: `${{ steps.version.outputs.VERSION }}`
+            - SHA256: `${{ steps.pypi.outputs.SHA256 }}`
+          branch: update-wechat-moments-${{ steps.version.outputs.VERSION }}
+          base: master
