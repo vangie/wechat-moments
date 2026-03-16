@@ -1,12 +1,15 @@
 .DEFAULT_GOAL := help
 
-.PHONY: help install check check-fix test test-e2e mcp mcp-remote deploy-remote status adb-screenshot cleanup post build
+.PHONY: help install setup check check-fix test test-e2e mcp mcp-remote deploy-remote status adb-screenshot cleanup post build
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z0-9_%-]+:.*?## .*$$' $(MAKEFILE_LIST) | sed 's/^Makefile://' | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 install: ## Install dependencies (uv sync)
 	uv sync
+
+setup: install ## Install dependencies and setup pre-commit hooks
+	uv run pre-commit install
 
 check: ## Run linter and format check
 	uv run ruff check src/ tests/
