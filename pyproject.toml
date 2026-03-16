@@ -44,7 +44,7 @@ build-backend = "uv_build"
 [tool.uv]
 
 [dependency-groups]
-dev = ["pytest>=8.0", "pytest-mock>=3.14", "mcp-hmr>=0.0.3", "pytest-asyncio>=0.24", "ruff>=0.9"]
+dev = ["pytest>=8.0", "pytest-mock>=3.14", "mcp-hmr>=0.0.3", "pytest-asyncio>=0.24", "ruff>=0.9", "pre-commit>=4.0"]
 
 [tool.pytest.ini_options]
 markers = ["e2e: end-to-end tests requiring a connected Android device"]

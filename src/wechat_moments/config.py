@@ -63,9 +63,11 @@ LOCK_FILE = DATA_DIR / "submit.lock"
 # Profiles bundled inside the package (importlib.resources)
 import importlib.resources as _pkg_resources
 
+
 def _bundled_profiles_dir() -> Path:
     """Return the path to bundled profiles shipped inside the wheel."""
     return Path(str(_pkg_resources.files("wechat_moments.profiles")))
+
 
 PROFILES_DIR = _bundled_profiles_dir()
 

@@ -6,7 +6,7 @@ on:
       - "v*"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   test:
@@ -41,3 +41,55 @@ jobs:
 
       - name: Publish to PyPI
         run: uv publish --token ${{ secrets.PYPI_TOKEN }}
+
+  release:
+    runs-on: ubuntu-latest
+    needs: publish
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Generate release notes
+        id: notes
+        run: |
+          # Get previous tag
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -n "$PREV_TAG" ]; then
+            echo "Generating changelog from $PREV_TAG to $GITHUB_REF_NAME"
+            NOTES=$(git log --pretty=format:"- %s" $PREV_TAG..$GITHUB_REF_NAME)
+          else
+            echo "First release, using all commits"
+            NOTES=$(git log --pretty=format:"- %s")
+          fi
+          echo "NOTES<<EOF" >> $GITHUB_OUTPUT
+          echo "$NOTES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: v${{ steps.version.outputs.VERSION }}
+          body: |
+            ## What's Changed
+            
+            ${{ steps.notes.outputs.NOTES }}
+            
+            ## Installation
+            
+            ```bash
+            # pip
+            pip install wechat-moments==${{ steps.version.outputs.VERSION }}
+            
+            # pipx
+            pipx install wechat-moments==${{ steps.version.outputs.VERSION }}
+            
+            # Homebrew
+            brew tap vangie/formula
+            brew install wechat-moments
+            ```
+          generate_release_notes: false
