@@ -1,6 +1,6 @@
 [project]
 name = "wechat-moments"
-version = "0.1.0"
+version = "0.1.1"
 description = "Post to WeChat Moments via ADB automation"
 readme = "README.md"
 authors = [{ name = "Vangie Du", email = "duwan@live.com" }]
