@@ -1985,7 +1985,6 @@ wheels = [
 
 [[package]]
 name = "wechat-moments"
-version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
