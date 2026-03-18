@@ -122,7 +122,7 @@ class TestPublishFailureBug:
         is_album = is_album_picker(screenshot)
         is_dropdown = is_album_dropdown(screenshot)
 
-        print(f"\n=== Step 18 CV Detection Results ===")
+        print("\n=== Step 18 CV Detection Results ===")
         print(f"is_moments_feed: {is_feed}")
         print(f"has_back_arrow: {has_back}")
         print(f"has_camera_icon: {has_camera}")
@@ -139,7 +139,7 @@ class TestPublishFailureBug:
         )
         state_after_submit = _identify_state("", screenshot, plan_after_submit)
 
-        print(f"\n=== State Detection ===")
+        print("\n=== State Detection ===")
         print(f"State (with submit_clicked=True): {state_after_submit}")
 
         # THE BUG: If is_moments_feed=True and submit_clicked=True,

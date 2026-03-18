@@ -9,13 +9,9 @@ Covers:
    post content area (18-55% height) instead of the cover photo (8-40%).
 """
 
-import subprocess
-from pathlib import Path
-from unittest.mock import MagicMock, call, patch
 import base64
-
-import pytest
-
+from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 # ---------------------------------------------------------------------------
 # 1. screenshot() single-command test
@@ -151,6 +147,7 @@ class TestOcrCropRegion:
     def test_crop_region_below_cover_photo(self):
         """OCR crop must start at ≥15% height (below cover photo) not 8%."""
         import inspect
+
         from wechat_moments.cv import extract_moments_feed_top_text
 
         source = inspect.getsource(extract_moments_feed_top_text)
