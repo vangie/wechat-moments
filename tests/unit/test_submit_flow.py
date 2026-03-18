@@ -11,12 +11,7 @@ from wechat_moments.poster import PlanState, UiState, _identify_state
 def moments_feed_screenshot() -> bytes:
     """Load a real moments feed screenshot for testing."""
     fixture_path = (
-        Path(__file__).parent.parent
-        / "fsm"
-        / "fixtures"
-        / "supplement"
-        / "moments_feed"
-        / "01.png"
+        Path(__file__).parent.parent / "fsm" / "fixtures" / "supplement" / "moments_feed" / "01.png"
     )
     if not fixture_path.exists():
         pytest.skip(f"Fixture not found: {fixture_path}")

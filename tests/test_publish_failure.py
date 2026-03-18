@@ -197,7 +197,9 @@ class TestPublishFailureBug:
             elif not detections["has_back_arrow"]:
                 print("\n⚠️  Moments feed without back arrow? Suspicious.")
             elif not detections["has_camera_icon_top_right"]:
-                print("\n⚠️  Moments feed without camera icon? Could be scrolled or wrong detection.")
+                print(
+                    "\n⚠️  Moments feed without camera icon? Could be scrolled or wrong detection."
+                )
 
     def test_sequence_analysis(self):
         """Analyze the full sequence from step 14-18 to understand the flow."""

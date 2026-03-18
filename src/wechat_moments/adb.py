@@ -249,7 +249,9 @@ class ADB:
 
             try:
                 result = self._run(
-                    ["shell", combined_cmd], timeout=30, check=False,
+                    ["shell", combined_cmd],
+                    timeout=30,
+                    check=False,
                 )
                 if result.returncode != 0:
                     if display_id:

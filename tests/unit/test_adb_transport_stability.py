@@ -32,9 +32,7 @@ class TestScreenshotSingleCommand:
         fake_png = b"\x89PNG\r\n\x1a\n" + b"\x00" * 200
         fake_b64 = base64.b64encode(fake_png).decode()
 
-        mock_run.return_value = MagicMock(
-            returncode=0, stdout=fake_b64
-        )
+        mock_run.return_value = MagicMock(returncode=0, stdout=fake_b64)
 
         adb = ADB.__new__(ADB)
         adb._base = ["adb"]
@@ -68,9 +66,7 @@ class TestScreenshotSingleCommand:
         from wechat_moments.adb import ADB
 
         fake_png = b"\x89PNG\r\n\x1a\n" + b"\x00" * 200
-        mock_run.return_value = MagicMock(
-            returncode=0, stdout=base64.b64encode(fake_png).decode()
-        )
+        mock_run.return_value = MagicMock(returncode=0, stdout=base64.b64encode(fake_png).decode())
 
         adb = ADB.__new__(ADB)
         adb._base = ["adb"]
@@ -165,6 +161,4 @@ class TestOcrCropRegion:
 
         # Must NOT use the old narrow x range (0.10)
         # The function should use 0.05 for wider capture
-        assert "0.05" in source, (
-            "OCR crop x1 should be 0.05 (5%) for wider text capture"
-        )
+        assert "0.05" in source, "OCR crop x1 should be 0.05 (5%) for wider text capture"
