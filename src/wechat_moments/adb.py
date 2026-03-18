@@ -204,10 +204,11 @@ class ADB:
     def screenshot(self) -> bytes:
         """Capture screen and return PNG bytes.
 
-        Strategy: shell screencap → base64 → decode on host.
-        This avoids exec-out and adb-pull which both close the ADB transport on
-        some Huawei/EMUI devices, causing the device to disappear from adb devices.
-        The shell channel stays open for the full base64 text stream.
+        Strategy: single ``adb shell`` call that runs screencap **and** base64 in
+        one command, so only one USB round-trip is needed per attempt.  This halves
+        the number of ADB transport operations compared to the previous two-call
+        approach and significantly reduces the chance of triggering the USB
+        transport-reset bug on Honor / Huawei (EMUI/MagicOS) devices.
 
         Uses -d <display_id> when available to suppress multi-display warnings.
         Falls back to no -d if the display_id format is not supported.
@@ -233,31 +234,32 @@ class ADB:
                 0,
                 3,
             ):  # Try with display_id on first attempt and after restart
-                screencap_args = ["screencap", "-d", display_id, self._SCREENSHOT_TMP_PATH]
+                screencap_cmd = f"screencap -d {display_id} {self._SCREENSHOT_TMP_PATH}"
             else:
                 # Fallback: no -d parameter (for devices where display_id format is unsupported)
-                screencap_args = ["screencap", self._SCREENSHOT_TMP_PATH]
+                screencap_cmd = f"screencap {self._SCREENSHOT_TMP_PATH}"
                 display_id = None  # Don't retry with display_id
 
+            # Single shell invocation: screencap && base64 in one USB round-trip.
+            # This avoids releasing the ADB transport lock between the two
+            # operations, which on Honor/Huawei devices can cause the transport
+            # to enter a stale state and make the device disappear from
+            # ``adb devices``.
+            combined_cmd = f"{screencap_cmd} && base64 {self._SCREENSHOT_TMP_PATH}"
+
             try:
-                result = self._run(["shell"] + screencap_args, timeout=15, check=False)
-                # Check if screencap failed due to invalid display_id
+                result = self._run(
+                    ["shell", combined_cmd],
+                    timeout=30,
+                    check=False,
+                )
                 if result.returncode != 0:
                     if display_id:
                         # Retry without -d parameter
                         display_id = None
                     continue
 
-                b64_result = self._run(
-                    ["shell", f"base64 {self._SCREENSHOT_TMP_PATH}"],
-                    timeout=30,
-                    check=False,
-                )
-                if b64_result.returncode != 0:
-                    # Screenshot file may not exist or be corrupted, retry
-                    continue
-
-                data = __import__("base64").b64decode(b64_result.stdout)
+                data = __import__("base64").b64decode(result.stdout)
                 if data and len(data) >= 100:
                     return data
             except Exception:
