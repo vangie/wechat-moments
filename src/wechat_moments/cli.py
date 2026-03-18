@@ -63,6 +63,15 @@ def post(text: str, images: tuple[str, ...], no_preview: bool, debug: bool) -> N
         click.secho(f"Failed: {result.get('error')}", fg="red", err=True)
         raise SystemExit(1)
 
+    # Restart ADB server after posting to prevent stale transport on Honor/Huawei devices.
+    # These devices' USB transport tends to break after intensive ADB operations (screenshots,
+    # input events), causing subsequent 'adb devices' to return empty. Restarting the server
+    # proactively ensures the next command can connect immediately.
+    try:
+        ADB(serial=None).restart_server()
+    except Exception:
+        pass  # Best-effort; don't fail the post because of this
+
 
 @main.command()
 def status() -> None:

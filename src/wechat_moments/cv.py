@@ -932,6 +932,44 @@ def find_album_done_in_picker(screenshot_bytes: bytes) -> tuple[int, int] | None
     return None
 
 
+def extract_moments_feed_top_text(screenshot_bytes: bytes) -> str:
+    """
+    Extract text from the top post in Moments feed using OCR.
+    This is used to verify that a newly published post actually appears at the top.
+
+    Returns the extracted text, or empty string if OCR unavailable or no text found.
+
+    Strategy: Extract text from the top post content area (below header, above second post).
+    The area roughly spans 8%-40% height and 10%-95% width (avoiding left-side profile pics).
+    """
+    if not _PYTESSERACT_AVAILABLE:
+        return ""
+
+    img = _bytes_to_cv2(screenshot_bytes)
+    h, w = img.shape[:2]
+
+    # Top post content region: below cover photo (~18%) to mid-screen (55%)
+    # The cover photo / header occupies roughly the top 15-18% on most devices.
+    # Avoid left margin (profile pics are ~0-10% width)
+    y1 = int(h * 0.18)
+    y2 = int(h * 0.55)
+    x1 = int(w * 0.05)
+    x2 = int(w * 0.95)
+    crop = img[y1:y2, x1:x2]
+
+    # Convert to grayscale for better OCR
+    gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
+    pil_img = Image.fromarray(gray)
+
+    try:
+        # Use both Chinese and English for text extraction
+        text = pytesseract.image_to_string(pil_img, lang="chi_sim+eng")
+        # Clean up: remove extra whitespace and newlines
+        return " ".join(text.split())
+    except (pytesseract.TesseractNotFoundError, pytesseract.TesseractError, Exception):
+        return ""
+
+
 def is_album_picker(screenshot_bytes: bytes) -> bool:
     """
     Detect if we're on the album/gallery picker screen (not dropdown).
