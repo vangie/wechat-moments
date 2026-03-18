@@ -97,7 +97,8 @@ class PlanState:
     discard_used: bool = False
     checkmark_retries: int = 0
     text_entered: bool = False
-    submitted: bool = False  # True after tapping "发表" button
+    submit_clicked: bool = False  # True after tapping "发表" button (not yet confirmed successful)
+    submitted: bool = False  # True after confirming post was published (back to moments feed)
     album_switched: bool = False  # True after switching to WeChatMCP album
     album_exited_for_refresh: bool = False  # True after exiting album picker to refresh media
     album_entered_from_bottom_sheet: bool = (
@@ -144,10 +145,6 @@ def _identify_state(activity: str, screenshot: bytes, plan: PlanState | None = N
     # Use default plan if not provided (e.g., crash recovery)
     if plan is None:
         plan = PlanState(text="", image_count=0)
-
-    # --- Priority 0: Already submitted ---
-    if plan.submitted:
-        return UiState.DONE
 
     # --- Priority 1: Overlay detection (can appear on any page) ---
 
@@ -202,6 +199,10 @@ def _identify_state(activity: str, screenshot: bytes, plan: PlanState | None = N
 
     # --- Priority 5: Moments feed (back arrow + camera icon + no tab bar) ---
     if is_moments_feed(screenshot):
+        # If we clicked submit and now we're back at moments feed, post was published successfully
+        if plan.submit_clicked:
+            plan.submitted = True
+            return UiState.DONE
         return UiState.MOMENTS_FEED
 
     # --- Priority 6: WeChat main (tab bar visible) ---
@@ -611,7 +612,7 @@ class UiFsm:
                 x, y = self._profile.compose_submit_coords()
                 self._adb.tap(x, y)
                 self._adb.wait(2000)
-                self._plan.submitted = True
+                self._plan.submit_clicked = True
                 return "点击发表"
 
             case UiState.FORCE_RESTART:
